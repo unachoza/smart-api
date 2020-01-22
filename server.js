@@ -46,11 +46,14 @@ app.post('/signin', (req, res) => {
       console.log(i)
        if (email === database.users[i].email && password == database.users[i].password) {
          res.json('sucessssss');
-         console.log('suess')
+        
+
         //   } else {
         //     res.json('access denied');
         //   }
       }
+    } else {
+      res.json('access denied')
     }
   })
   return res.json()
