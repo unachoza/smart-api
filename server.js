@@ -41,20 +41,11 @@ app.post('/signin', (req, res) => {
   const {users} = database
   // });
   for (let i = 0; i < users.length; i++  ) {
-  // users.forEach((user, i) => {
-    console.log("more here",email, i, users.email)
     if (email === users[i].email) {
-      console.log(i)
-      console.log(email === users[i].email)
-      console.log(email === users[i].email && password == users[i].password)
       if (email === users[i].email && password == users[i].password) {
-         console.log("works")
         res.json('sucessssss');
         return res.json()
       }
-    // } else {
-    //   res.json('access denied')
-      
     }
   }
   return res.json()
@@ -96,6 +87,7 @@ app.post('/register', (req, res) => {
     joined: new Date(),
   });
   console.log("this is the database", database);
+  res.json('in there');
 
   return res.json(database.users[database.users.length -1])
 
