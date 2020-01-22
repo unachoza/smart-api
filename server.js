@@ -92,7 +92,6 @@ app.post('/register', (req, res) => {
     joined: new Date(),
   });
   console.log("this is the database", database);
-  // console.log('this is res', res.json().body)
 
   return res.json(database.users[database.users.length -1])
 
