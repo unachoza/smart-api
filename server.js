@@ -38,24 +38,25 @@ app.post('/signin', (req, res) => {
   // bcrypt.compare(req.body.password, hash, (err, res) => {
   //   console.log('in there', res)
   const { email, password } = req.body
+  const {users} = database
   // });
-  console.log(email, database.users[0].email, "themail", "pa")
-  database.users.forEach((user, i) => {
-    console.log('jer')
-    if (email === user.email) {
+  for (let i = 0; i < users.length; i++  ) {
+  // users.forEach((user, i) => {
+    console.log("more here",email, i, users.email)
+    if (email === users[i].email) {
       console.log(i)
-       if (email === database.users[i].email && password == database.users[i].password) {
-         res.json('sucessssss');
-        
-
-        //   } else {
-        //     res.json('access denied');
-        //   }
+      console.log(email === users[i].email)
+      console.log(email === users[i].email && password == users[i].password)
+      if (email === users[i].email && password == users[i].password) {
+         console.log("works")
+        res.json('sucessssss');
+        return res.json()
       }
-    } else {
-      res.json('access denied')
+    // } else {
+    //   res.json('access denied')
+      
     }
-  })
+  }
   return res.json()
 })
 
