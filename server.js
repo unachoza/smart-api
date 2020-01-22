@@ -43,8 +43,8 @@ app.post('/signin', (req, res) => {
   for (let i = 0; i < users.length; i++  ) {
     if (email === users[i].email) {
       if (email === users[i].email && password == users[i].password) {
-        res.json('sucessssss');
-        return res.json()
+        // res.json('sucessssss');
+        return res.json(database.users[i].id)
       }
     }
   }
@@ -87,7 +87,7 @@ app.post('/register', (req, res) => {
     joined: new Date(),
   });
   console.log("this is the database", database);
-  res.json('in there');
+  // res.json('in there');
 
   return res.json(database.users[database.users.length -1])
 
