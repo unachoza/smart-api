@@ -4,6 +4,11 @@ var bodyParser = require('body-parser');
 var cors = require('cors');
 const bcrypt = require('bcrypt-nodejs');
 const knex = require('knex');
+const image = require('./Controllers/image')
+const signin = require('./Controllers/signin')
+const profile = require('./Controllers/getProfile')
+const register = require('./Controllers/resgister')
+
 
 const db = knex({
   client: 'pg',
@@ -15,122 +20,13 @@ const db = knex({
   },
 });
 
-console.log(db.select('*').from('users'));
-
 app.use(cors());
 app.use(bodyParser.json());
-app.get('/', (req, res) => res.send(db));
 
-app.post('/signin', async (req, res) => {
-  db.select('email', 'hash').from('login')
-    .where('email', '=', req.body.email)
-    .then(data => {
-      const isValid = bcrypt.compareSync(req.body.password, data[0].hash);
-      if (isValid) {
-        return db.select('*').from('users')
-          .where('email', '=', req.body.email)
-          .then(user => {
-            res.json(user[0])
-          })
-          .catch(err => res.status(400).json('unable to get user'))
-      } else {
-        res.status(400).json('wrong credentials')
-      }
-    })
-    .catch(err => res.status(400).json('wrong credentials'))
-})
+app.get('/', (req, res) => res.send('hello world'));
+app.post('/signin', (req, res) => { signin.handleSignin( req, res, db, bcrypt) })
+app.post('/register', (req, res) => { register.registerUser(req, res, db, bcrypt) })
+app.get('/profile/:id', (req, res) => { profile.getProfile(req, res, db)})
+app.put('/image', (req, res) => { image.sendImage(req, res, db)})
 
-  app.post('/register', async (req, res) => {
-    const { email, name, password } = req.body;
-  const hash = bcrypt.hashSync(password);
- const result = await db.transaction(trx => {
-      trx.insert({
-        hash: hash,
-        email: email
-      })
-      .into('login')
-      .returning('email')
-      .then(loginEmail => {
-        return trx('users')
-          .returning('*')
-          .insert({
-            email: loginEmail[0],
-            name: name,
-            joined: new Date()
-          })
-          .then(user => {
-            res.json(user[0]);
-          })
-      })
-          
-      .then(trx.commit)
-      // .catch(trx.rollback)
- })
-    // console.log(result)
-    console.log('it strts here0000000000' , res.json(result))
-     return res.json(result)
-    //  console.log(reg)
-    // .catch(err => res.status(400).json('unable to register'))
-})
-
-  //   const { email, name, password } = req.body;
-  //   const hash = bcrypt.hashSync(password);
-  //   const response = await db('users')
-  //     .returning('*')
-  //     .insert({
-  //       name: name,
-  //       email: email,
-  //       joined: new Date(),
-  //     })
-  //     .catch(error => res.status(400).json(error));
-
-  //   return res.json(response);
-  // }),
-  // app.put('/image', async (req, res) => {
-  //   const { id } = req.body;
-  //   const newEntriesCount = await db('users')
-  //     .where('id', '=', id)
-  //     .increment('entries', 1)
-  //     .returning('entries');
-
-  //   return res.json(newEntriesCount[0]);
-  // });
-
-// return res.json(db.users[db.users.length - 1]);
-// db
-//   .transaction(trx => {
-//     trx
-//       .insert({
-//         hash: hash,
-//         email: email,
-//       })
-//       .into('login')
-//       .returning('email')
-//       .then(email => {
-//         return trx('users')
-//           .returning('*')
-//           .insert({
-//             email: email[0],
-//             name: name,
-//             joined: new Date(),
-//           })
-//           .then(user => {
-//             res.json(user[0]);
-//           });
-//       })
-//       .then(trx.commit)
-//       .catch(trx.rollback);
-//   })
-// .catch(err => res.status(400).json('unable to register'));
-// });
-
-app.get('/profile/:id', async (req, res) => {
-  const { id } = req.params;
-  const thisUSer = await db
-    .select('*')
-    .from('users')
-    .where({ id: id });
-  console.log(thisUSer);
-  return thisUSer.length ? res.json(thisUSer) : res.status(400).json('user not found');
-}),
-  app.listen(3000, () => console.log('Example app listening on port 3000!'));
+app.listen(3000, () => console.log('Example app listening on port 3000!'));
