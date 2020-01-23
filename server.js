@@ -37,41 +37,29 @@ app.get('/', (req, res) => res.send(database));
 app.post('/signin', (req, res) => {
   // bcrypt.compare(req.body.password, hash, (err, res) => {
   //   console.log('in there', res)
-  const { email, password } = req.body
-  const {users} = database
+  const { email, password } = req.body;
+  const { users } = database;
   // });
-  for (let i = 0; i < users.length; i++  ) {
+  for (let i = 0; i < users.length; i++) {
     if (email === users[i].email) {
       if (email === users[i].email && password == users[i].password) {
-        // res.json('sucessssss');
-        return res.json(database.users[i].id)
+        return res.json(database.users[i]);
       }
     }
   }
-  return res.json()
-})
+  return res.json();
+});
 
-//   if (email === database.users[num].email && password == database.users[0].password) {
-//     res.json('sucessssss');
-//   } else {
-//     res.json('access denied');
-//   }
-// });
-
-app.post('/image', (req, res) => {
+app.put('/image', (req, res) => {
   const { id } = req.body;
-  console.log(req.body.user);
-  let exists = false;
-  database.users.forEach(user => {
-    console.log(user);
-    if (user.id === id) {
-      exists = true;
-      user.entries++;
-      return res.status(300).json(user);
+  console.log(req.body);
+  const { users } = database;
+  for (let i = 0; i < users.length; i++) {
+    if (id === users[i].id) {
+      console.log(true)
+      users[i].entries++;
+      return res.json(database.users[i].entries);
     }
-  });
-  if (!exists) {
-    res.status(400).json('user not found her');
   }
 });
 
@@ -86,10 +74,10 @@ app.post('/register', (req, res) => {
     entries: 0,
     joined: new Date(),
   });
-  console.log("this is the database", database);
+  console.log('this is the database', database);
   // res.json('in there');
 
-  return res.json(database.users[database.users.length -1])
+  return res.json(database.users[database.users.length - 1]);
 
   // database
   //   .transaction(trx => {
