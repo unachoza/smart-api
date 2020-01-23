@@ -13,6 +13,6 @@ const getProfile = async (req, res, db) => {
   
 }
 module.exports = {
-  getProfile : getProfile
+  getProfile 
 }
   

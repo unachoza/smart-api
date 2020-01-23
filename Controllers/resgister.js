@@ -1,6 +1,9 @@
 const registerUser = async (req, res, db, bcrypt) => {
   const { email, name, password } = req.body;
   const hash = bcrypt.hashSync(password);
+  if (!email || !password || !name) {
+    return res.status(400).json('incorrect form submission');
+  }
   try {
     const result = await db.transaction(trx => {
       trx
@@ -32,5 +35,5 @@ const registerUser = async (req, res, db, bcrypt) => {
 };
 
 module.exports = {
-  registerUser: registerUser,
+  registerUser
 };

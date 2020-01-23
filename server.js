@@ -27,6 +27,7 @@ app.get('/', (req, res) => res.send('hello world'));
 app.post('/signin', (req, res) => { signin.handleSignin( req, res, db, bcrypt) })
 app.post('/register', (req, res) => { register.registerUser(req, res, db, bcrypt) })
 app.get('/profile/:id', (req, res) => { profile.getProfile(req, res, db)})
-app.put('/image', (req, res) => { image.sendImage(req, res, db)})
+app.put('/image', (req, res) => { image.sendImage(req, res, db) })
+app.post('/imageurl', (req, res) => { image.handleApiCall(req, res) })
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'));
