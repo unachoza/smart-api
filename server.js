@@ -5,30 +5,17 @@ var cors = require('cors');
 const bcrypt = require('bcrypt-nodejs');
 const knex = require('knex');
 
-const database = {
-  users: [
-    {
-      id: '123',
-      name: 'Arianna',
-      email: 'unachoza@gmail.com',
-      password: 'arianna',
-      entries: 3,
-      joined: new Date(),
-    },
-    {
-      id: '124',
-      name: 'sara',
-      email: 'sara@gmail.com',
-      password: 'sara',
-      entries: 31,
-      joined: new Date(),
-    },
-  ],
-  // secrets: {
-  //   users_id: '123',
-  //   hash: 'wghhh',
-  // },
-};
+const db = knex({
+  client: 'pg',
+  connection: {
+    host: '127.0.0.1',
+    user: 'arianna',
+    password: '',
+    database: 'image-rec',
+  },
+});
+
+console.log(db.select('*').from('users'));
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -56,29 +43,27 @@ app.put('/image', (req, res) => {
   const { users } = database;
   for (let i = 0; i < users.length; i++) {
     if (id === users[i].id) {
-      console.log(true)
+      console.log(true);
       users[i].entries++;
       return res.json(database.users[i].entries);
     }
   }
 });
 
-app.post('/register', (req, res) => {
+app.post('/register', async (req, res) => {
   const { email, name, password } = req.body;
   const hash = bcrypt.hashSync(password);
-  database.users.push({
-    id: database.users.length,
+  const response = await db('users')
+    .returning("*")
+    .insert({
     name: name,
     email: email,
-    password: password,
-    entries: 0,
     joined: new Date(),
-  });
-  console.log('this is the database', database);
-  // res.json('in there');
-
-  return res.json(database.users[database.users.length - 1]);
-
+  })
+ 
+  return res.json(response)
+})
+  // return res.json(database.users[database.users.length - 1]);
   // database
   //   .transaction(trx => {
   //     trx
@@ -104,7 +89,7 @@ app.post('/register', (req, res) => {
   //       .catch(trx.rollback);
   //   })
   // .catch(err => res.status(400).json('unable to register'));
-});
+// });
 
 app.get('/profile/:userId', (req, res) => {
   const { userId } = req.params;
