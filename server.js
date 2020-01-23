@@ -18,38 +18,30 @@ const db = knex({
 console.log(db.select('*').from('users'));
 
 app.use(cors());
-app.use(bodyParser.json());
-app.get('/', (req, res) => res.send(database));
+app.use(bodyParser.json()); 
+app.get('/', (req, res) => res.send(db));
 
-app.post('/signin', (req, res) => {
+app.post('/signin', async (req, res) => {
   // bcrypt.compare(req.body.password, hash, (err, res) => {
   //   console.log('in there', res)
   const { email, password } = req.body;
-  const { users } = database;
-  // });
-  for (let i = 0; i < users.length; i++) {
-    if (email === users[i].email) {
-      if (email === users[i].email && password == users[i].password) {
-        return res.json(database.users[i]);
-      }
+  const { users } = db;
+  const thisUSer = await db.select('*').from('users').where({'email': email})
+  
+  try {
+    
+    if (thisUSer.email === users[i].email && thisUSer.password == users[i].password) {
+      return res.json("this is the user", db.users[i])
     }
   }
-  return res.json();
-});
-
-app.put('/image', (req, res) => {
-  const { id } = req.body;
-  console.log(req.body);
-  const { users } = database;
-  for (let i = 0; i < users.length; i++) {
-    if (id === users[i].id) {
-      console.log(true);
-      users[i].entries++;
-      return res.json(database.users[i].entries);
-    }
+  catch (error) {
+    console.log(error)
+    res.status(400).json('wrong credentials')
+  // }
   }
-});
-
+}),
+  
+  
 app.post('/register', async (req, res) => {
   const { email, name, password } = req.body;
   const hash = bcrypt.hashSync(password);
@@ -59,12 +51,28 @@ app.post('/register', async (req, res) => {
     name: name,
     email: email,
     joined: new Date(),
-  })
+    })
+  .catch(error => res.status(400).json(error)) 
  
   return res.json(response)
+}),
+
+app.put('/image', (req, res) => {
+  const { id } = req.body;
+  console.log(req.body);
+  const { users } = db;
+  for (let i = 0; i < users.length; i++) {
+    if (id === users[i].id) {
+      console.log(true);
+      users[i].entries++;
+      return res.json(db.users[i].entries);
+    }
+  }
 })
-  // return res.json(database.users[database.users.length - 1]);
-  // database
+
+
+  // return res.json(db.users[db.users.length - 1]);
+  // db
   //   .transaction(trx => {
   //     trx
   //       .insert({
@@ -91,18 +99,13 @@ app.post('/register', async (req, res) => {
   // .catch(err => res.status(400).json('unable to register'));
 // });
 
-app.get('/profile/:userId', (req, res) => {
-  const { userId } = req.params;
-  let exists = false;
-  database.users.forEach(user => {
-    if (user.id === userId) {
-      exists = true;
-      return res.json(user);
-    }
-  });
-  if (!exists) {
-    res.status(400).json('user not found');
-  }
-});
+app.get('/profile/:id', async (req, res) => {
+  const { id } = req.params;
+  const thisUSer = await db.select('*').from('users').where({ "id": id })
+  console.log(thisUSer)
+return thisUSer.length? res.json(thisUSer) :res.status(400).json('user not found');
+  
+    
+}),
 
 app.listen(3000, () => console.log('Example app listening on port 3000!'));
