@@ -5,7 +5,6 @@ const getProfile = async (req, res, db) => {
       .select('*')
       .from('users')
       .where({ id: id });
-    console.log(thisUSer);
     return thisUSer.length ? res.json(thisUSer) : res.status(400).json('user not found');
   } catch (error) {
     console.log(error)
